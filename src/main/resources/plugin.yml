@@ -1,0 +1,6 @@
+name: MovingPlatforms
+version: BETA
+main: me.liamhbest.platforms.MovingPlatformsPrototype
+api-version: 1.17
+author: LiamHBest
+description: Moving Platforms Prototype for Hexilion Games dungeons.
