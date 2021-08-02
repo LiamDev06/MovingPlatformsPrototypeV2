@@ -1,14 +1,17 @@
 package me.liamhbest.platforms.commands;
 
+import me.liamhbest.platforms.MovingPlatforms;
 import me.liamhbest.platforms.data.PlatformData;
 import me.liamhbest.platforms.utility.Logger;
 import me.liamhbest.platforms.utility.Translated;
+import me.liamhbest.platforms.utility.YawCalc;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlatformCommand implements CommandExecutor {
 
@@ -63,7 +66,7 @@ public class PlatformCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (PlatformData.platformExists(name)) {
+                if (!PlatformData.platformExists(name)) {
                     message.send("&cThis platform does not exist!");
                     return true;
                 }
@@ -132,6 +135,53 @@ public class PlatformCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("activate")) {
+
+            if (args.length > 1){
+                String name;
+                try {
+                    name = args[1];
+                } catch (Exception e){
+                    message.send("&cInvalid name!");
+                    return true;
+                }
+
+                PlatformData.startPlatform(name);
+                Location startLoc = PlatformData.getStartLocation(name);
+                Location endLoc = PlatformData.getEndLocation(name);
+                YawCalc yawCalc = YawCalc.getYaw(startLoc);
+                int distance;
+
+                if (yawCalc == YawCalc.NORTH) {
+                    distance = startLoc.getBlockY() - endLoc.getBlockY();
+                    startLoc.add(0, -1, 0);
+
+                    new BukkitRunnable(){
+                        int times = 0;
+
+                        @Override
+                        public void run(){
+
+                            startLoc.add(0, 0, -1).getBlock().setType(Material.GOLD_BLOCK);
+
+                            new BukkitRunnable(){
+                                @Override
+                                public void run(){
+                                    startLoc.getBlock().setType(Material.AIR);
+                                }
+                            }.runTaskLater(MovingPlatforms.INSTANCE, 20L);
+
+                            times++;
+                        }
+
+                    }.runTaskTimer(MovingPlatforms.INSTANCE, 20, 21);
+
+                }
+
+                message.send("&bThe platform has been started.");
+
+            } else {
+                message.send("&cPlease enter a name!");
+            }
 
         }
 

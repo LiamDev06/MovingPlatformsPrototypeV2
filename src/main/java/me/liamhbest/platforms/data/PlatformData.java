@@ -2,8 +2,10 @@ package me.liamhbest.platforms.data;
 
 import me.liamhbest.platforms.MovingPlatforms;
 import me.liamhbest.platforms.utility.Logger;
+import me.liamhbest.platforms.utility.YawCalc;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -143,7 +145,57 @@ public class PlatformData {
         return location;
     }
 
+    public static Location getEndLocation(String name){
+        File file = new File(MovingPlatforms.INSTANCE.getDataFolder() + "/Platforms", name + ".yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        Location location = new Location(
+                Bukkit.getWorld(config.getString("end.world")),
+                config.getInt("end.x"),
+                config.getInt("end.y"),
+                config.getInt("end.z"),
+                (float) config.getDouble("end.yaw"),
+                (float) 0.0
+        );
+
+        return location;
+    }
+
     public static void launchPlatform(Location location){
+        YawCalc yaw = YawCalc.getYaw(location);
+        //location.add(0, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+
+        if (yaw == YawCalc.EAST) {
+
+        }
+
+        if (yaw == YawCalc.NORTH) {
+            location.add(0, -1, -1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(0, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-2, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(0, 0, -1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(0, 0, -1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+        }
+
+        if (yaw == YawCalc.SOUTH) {
+            location.add(0, -1, 1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(2, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(0, 0, 1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(-1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(0, 0, 1).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+            location.add(1, 0, 0).getBlock().setType(Material.GOLD_BLOCK);
+        }
+
+        if (yaw == YawCalc.WEST) {
+
+        }
 
     }
 
