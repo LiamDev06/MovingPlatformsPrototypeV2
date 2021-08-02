@@ -1,0 +1,7 @@
+Setup:
+1 Perform /platform create [name]
+2 Set start positions /platform start [name]
+3 Set end position /platform end [name]
+4 Launch the platform and launch it /platform launch [name]
+5 Start the platform with /platform activate [name]
+6 Stop the platform with /platform stop [name]

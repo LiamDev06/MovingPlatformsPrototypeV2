@@ -1,5 +1,6 @@
 package me.liamhbest.platforms;
 
+import me.liamhbest.platforms.commands.PlatformCommand;
 import me.liamhbest.platforms.utility.Logger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,8 +14,12 @@ public final class MovingPlatforms extends JavaPlugin {
         INSTANCE = this;
         Logger.log("Starting plugin...");
 
-        PluginManager pm = this.getServer().getPluginManager();
+        saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+        saveConfig();
 
+        registerListeners();
+        registerCommands();
 
         Logger.log("Plugin has been enabled without any errors.");
     }
@@ -25,6 +30,15 @@ public final class MovingPlatforms extends JavaPlugin {
         Logger.log("Disabling plugin...");
         Logger.log("Plugin has been disabled without errors.");
     }
+
+    public void registerListeners(){
+        PluginManager pm = this.getServer().getPluginManager();
+    }
+
+    public void registerCommands(){
+        getCommand("platform").setExecutor(new PlatformCommand());
+    }
+
 }
 
 
