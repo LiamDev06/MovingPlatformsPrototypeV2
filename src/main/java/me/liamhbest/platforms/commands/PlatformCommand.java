@@ -10,8 +10,12 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
 
 public class PlatformCommand implements CommandExecutor {
 
@@ -145,35 +149,64 @@ public class PlatformCommand implements CommandExecutor {
                     return true;
                 }
 
+                if (!PlatformData.platformExists(name)) {
+                    message.send("&cThis does not exist!");
+                    return true;
+                }
+
                 PlatformData.startPlatform(name);
                 Location startLoc = PlatformData.getStartLocation(name);
                 Location endLoc = PlatformData.getEndLocation(name);
                 YawCalc yawCalc = YawCalc.getYaw(startLoc);
-                int distance;
+                startLoc.add(0, -1, 0);
 
                 if (yawCalc == YawCalc.NORTH) {
-                    distance = startLoc.getBlockY() - endLoc.getBlockY();
-                    startLoc.add(0, -1, 0);
+                    Location a = startLoc.clone().add(-1, 0, -1);
+                    Location b = startLoc.clone().add(0, 0, -1);
+                    Location c = startLoc.clone().add(1, 0, -1);
+
+                    int distance;
+                    int startLocZ = Integer.parseInt(String.valueOf(startLoc.getBlockZ()).replace("-", ""));
+                    int endLocZ = Integer.parseInt(String.valueOf(endLoc.getBlockZ()).replace("-", ""));
+                    if (startLocZ > endLocZ) {
+                        distance = startLocZ - endLocZ;
+                    } else {
+                        distance = endLocZ - startLocZ;
+                    }
 
                     new BukkitRunnable(){
+                        boolean first = true;
                         int times = 0;
 
                         @Override
                         public void run(){
+                            if (!PlatformData.isActive(name)) this.cancel();
 
-                            startLoc.add(0, 0, -1).getBlock().setType(Material.GOLD_BLOCK);
+                            if (first) {
+                                first = false;
+                            } else {
+                                a.add(0, 0, -3).getBlock().setType(Material.GOLD_BLOCK);
+                                b.add(0, 0, -3).getBlock().setType(Material.GOLD_BLOCK);
+                                c.add(0, 0, -3).getBlock().setType(Material.GOLD_BLOCK);
+
+                                a.add(0, 0, 2);
+                                b.add(0, 0, 2);
+                                c.add(0, 0, 2);
+                            }
 
                             new BukkitRunnable(){
                                 @Override
                                 public void run(){
-                                    startLoc.getBlock().setType(Material.AIR);
+                                    a.getBlock().setType(Material.AIR);
+                                    b.getBlock().setType(Material.AIR);
+                                    c.getBlock().setType(Material.AIR);
                                 }
-                            }.runTaskLater(MovingPlatforms.INSTANCE, 20L);
+                            }.runTaskLater(MovingPlatforms.INSTANCE, 19);
 
                             times++;
                         }
 
-                    }.runTaskTimer(MovingPlatforms.INSTANCE, 20, 21);
+                    }.runTaskTimer(MovingPlatforms.INSTANCE, 20, 20);
 
                 }
 
@@ -186,6 +219,39 @@ public class PlatformCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("stop")) {
+
+            if (args.length > 1){
+                String name;
+                try {
+                    name = args[1];
+                } catch (Exception e){
+                    message.send("&cInvalid name!");
+                    return true;
+                }
+
+                if (!PlatformData.platformExists(name)) {
+                    message.send("&cThis platform does not exist!");
+                    return true;
+                }
+
+                PlatformData.endPlatform(name);
+                message.send("&dPlatform has stopped.");
+                PlatformData.launchPlatform(PlatformData.getStartLocation(name));
+
+            } else {
+                message.send("&cPlease enter a name!");
+            }
+
+        }
+
+        if (args[0].equalsIgnoreCase("list")) {
+            File[] files = new File(MovingPlatforms.INSTANCE.getDataFolder() + "/Platforms").listFiles();
+            message.send("&7------------ &6&lPlatform List &7------------");
+
+            for (File file : files){
+                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+                message.send("&8- &a" + config.getString("name"));
+            }
 
         }
 

@@ -94,6 +94,12 @@ public class PlatformData {
         }
     }
 
+    public static boolean isActive(String name){
+        File file = new File(MovingPlatforms.INSTANCE.getDataFolder() + "/Platforms", name + ".yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        return config.getBoolean("active");
+    }
+
     public static void deletePlatform(String name){
         File file = new File(MovingPlatforms.INSTANCE.getDataFolder() + "/Platforms", name + ".yml");
 
